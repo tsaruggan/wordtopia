@@ -1,24 +1,34 @@
 #include "database.h"
 #include "vector_search.h"
-#include "hnswlib/hnswlib.h"
 
 int main() {
     int embedding_size = 300;
     int word_count = 28032;
     std::string json_directory = "../dictionary";
     std::string database_name = "dictionary.db";
-    std::string table_name = "dictionary";
     std::string index_name = "index.bin";
-    std::vector<std::string> database_columns = {"word", "definition"};
-    std::string embedding_column = "embedding";
 
     // Initialize database
-    Database db(database_name);
-    db.populate(json_directory, table_name, database_columns);
+    Database database(database_name);
+    database.populate(json_directory);
 
     // Initialize vector search
     VectorSearch vector_search(index_name, embedding_size, word_count);
-    vector_search.populate(json_directory, embedding_column);
+    vector_search.populate(json_directory);
+
+    // Example word
+    std::string word = "apple";
+    
+    // Get the id for the word
+    int id = database.get_id(word);
+    std::cout << "word: '" << word << "'  -> id: " << id << std::endl;
+    
+    // Fetch the dictionary records for the given id(s)
+    std::vector<int> ids = {id}; 
+    json records = database.get_dictionary_records(ids);
+    
+    // Print the resulting JSON
+    std::cout << "Dictionary: " << records.dump(4) << std::endl;
 
     return 0;
 }

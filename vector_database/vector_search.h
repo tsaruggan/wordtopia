@@ -19,7 +19,7 @@ class VectorSearch {
             index = new hnswlib::HierarchicalNSW<float>(&space, word_count);
         }
 
-        void populate(const std::string& json_directory, const std::string& embedding_column) {
+        void populate(const std::string& json_directory) {
             // Loop through JSON files in directory
             int id = 0;
             for (const auto& entry : fs::directory_iterator(json_directory)) {
@@ -30,7 +30,7 @@ class VectorSearch {
 
                     // Insert each record into the index
                     for (const auto& item : json_data) {
-                        const std::vector<float> embedding = item[embedding_column];
+                        const std::vector<float> embedding = item["embedding"];
                         index->addPoint(embedding.data(), id);
                         id++;
                     }
