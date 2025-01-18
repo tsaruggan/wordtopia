@@ -51,6 +51,7 @@ class Database {
             // Create table
             std::string table_name = "dictionary";
             std::string create_table_sql = "CREATE TABLE IF NOT EXISTS dictionary (id INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT, definition TEXT);";
+            // std::string create_table_sql = "CREATE TABLE IF NOT EXISTS dictionary (id INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT);";
             sqlite3_exec(db, create_table_sql.c_str(), 0, 0, 0);
 
             // Loop through JSON files in directory
@@ -65,6 +66,7 @@ class Database {
                         std::string word = item["word"];
                         std::string definition = item["definition"];
                         std::string insert_sql = "INSERT INTO dictionary (word, definition) VALUES ('" + word + "', '" + definition + "');";
+                        // std::string insert_sql = "INSERT INTO dictionary (word) VALUES ('" + word + "');";
                         sqlite3_exec(db, insert_sql.c_str(), 0, 0, 0);
                     }
                 }
@@ -128,6 +130,7 @@ class Database {
         json get_dictionary_records(const std::vector<int>& ids) {
             // Construct batch query by directly embedding each id into the query string
             std::string query_sql = "SELECT id, word, definition FROM dictionary WHERE id IN (";
+            // std::string query_sql = "SELECT id, word FROM dictionary WHERE id IN (";
             for (size_t i = 0; i < ids.size(); ++i) {
                 query_sql += std::to_string(ids[i]);
                 if (i < ids.size() - 1) {
