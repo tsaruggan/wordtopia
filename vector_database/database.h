@@ -48,38 +48,50 @@ class Database {
         }
 
         void populate(const std::string& json_directory) {
-            // Create table without AUTOINCREMENT
+            std::cout << "Populating database from " << json_directory << "..." << std::endl;
+
+            // Create table without id (starting from 0), word, and definition
             std::string create_table_sql = "CREATE TABLE IF NOT EXISTS dictionary (id INTEGER PRIMARY KEY, word TEXT, definition TEXT);";
             sqlite3_exec(db, create_table_sql.c_str(), 0, 0, 0);
 
-            // Loop through JSON files in directory
-            int id = 0;
+            // Sort JSON dataset files in alphabetical order
+            std::vector<fs::path> data_files;
             for (const auto& entry : fs::directory_iterator(json_directory)) {
                 if (entry.path().extension() == ".json") {
-                    std::ifstream file(entry.path());
-                    json json_data;
-                    file >> json_data;
-
-                    // Insert each record into the database
-                    for (const auto& item : json_data) {
-                        std::string word = item["word"];
-                        std::string definition = item["definition"];
-
-                        // Use prepared statement to prevent SQL injection
-                        std::string insert_sql = "INSERT INTO dictionary (id, word, definition) VALUES (?, ?, ?);";
-                        sqlite3_stmt* stmt;
-                        if (sqlite3_prepare_v2(db, insert_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
-                            sqlite3_bind_int(stmt, 1, id);
-                            sqlite3_bind_text(stmt, 2, word.c_str(), -1, SQLITE_STATIC);
-                            sqlite3_bind_text(stmt, 3, definition.c_str(), -1, SQLITE_STATIC);
-
-                            sqlite3_step(stmt);
-                            sqlite3_finalize(stmt);
-                        }
-                        id++;  // Increment ID manually
-                    }
+                    data_files.push_back(entry.path());
                 }
             }
+            std::sort(data_files.begin(), data_files.end());
+
+            // Loop through JSON files, extract data, and populate database
+            int id = 0;
+            for (const auto& path : data_files) {
+                std::cout << "Extracting data from " << path << "..." << std::endl;
+
+                std::ifstream file(path);
+                json json_data;
+                file >> json_data;
+                
+                // Insert each record into the database
+                for (const auto& item : json_data) {
+                    std::string word = item["word"];
+                    std::string definition = item["definition"];
+
+                    // Use prepared statement to prevent SQL injection
+                    std::string insert_sql = "INSERT INTO dictionary (id, word, definition) VALUES (?, ?, ?);";
+                    sqlite3_stmt* stmt;
+                    if (sqlite3_prepare_v2(db, insert_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+                        sqlite3_bind_int(stmt, 1, id);
+                        sqlite3_bind_text(stmt, 2, word.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_bind_text(stmt, 3, definition.c_str(), -1, SQLITE_STATIC);
+                        sqlite3_step(stmt);
+                        sqlite3_finalize(stmt);
+                    }
+                    id++;
+                }
+            }
+
+            std::cout << "Dictionary seeding complete!" << std::endl;
         }
 
         // Check if a word exists in the database

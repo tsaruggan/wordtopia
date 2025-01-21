@@ -1,57 +1,79 @@
+#include <filesystem>
 #include "database.h"
 #include "vector_search.h"
 
 int main() {
-    // int embedding_size = 300;
+    // Dataset details
+    std::string json_directory = "../dictionary";
     int embedding_size = 1536;
     int word_count = 28032;
-    // int word_count = 28;
-    std::string json_directory = "../dictionary";
-    std::string database_name = "dictionary.db";
-    std::string index_name = "index.bin";
 
     // Initialize database
+    std::string database_name = "dictionary.db";
     Database database(database_name);
-    // database.populate(json_directory);
+    if (!std::filesystem::exists(database_name)) {
+        database.populate(json_directory);
+    }
 
     // Initialize vector search
+    std::string index_name = "index.bin";
     size_t M = 16;            
     size_t ef_construction = 200;  
     size_t ef = 10; 
     VectorSearch vector_search(index_name, embedding_size, word_count, M, ef_construction, ef);
-    // vector_search.populate(json_directory);
-    vector_search.load();
+    if (!std::filesystem::exists(index_name)) {
+        vector_search.populate(json_directory);
+    } else {
+        vector_search.load();
+    }
 
     // Example word
-    std::string word = "abalone";
+    std::string word = "cancer";
     
     // Get the id for the word
     int id = database.get_id(word);
-    std::cout << "word: '" << word << "'  -> id: " << id << std::endl;
+    std::cout << "Word: \"" << word << "\" [" << id << "]" << std::endl;
     
     // Search for similar words
-    float threshold = 0.0;
     int top_n = 5;
-    json similar_ids = vector_search.search(id, threshold, top_n);
+    json search_results = vector_search.search(id, top_n);
 
     // Extract IDs from search results
-    std::vector<int> ids;
-    for (const auto& item : similar_ids) {
+    std::vector<int> ids = { id };
+    for (const auto& item : search_results) {
         ids.push_back(item["id"]);
     }
 
     // Fetch dictionary records for similar words
-    json records = database.get_dictionary_records(ids);
+    json dictionary_records = database.get_dictionary_records(ids);
 
-    // Print the resulting JSON
-    // std::cout << "Similar words: " << records.dump(4) << std::endl;
-    std::cout << "Similarity: " << similar_ids.dump(4) << std::endl;
+    // Merge dictionary records with similarity scores
+    json merged_results = json::array();
+    for (const auto& record : dictionary_records) {
+        int id = record["id"];
+        
+        // Find corresponding similarity score
+        float similarity = 1.0;
+        for (const auto& item : search_results) {
+            if (item["id"] == id) {
+                similarity = item["similarity"];
+                break;
+            }
+        }
 
-    // Print the words
-    for (const auto& record : records) {
-        std::cout << record["word"] << std::endl;
+        // Add merged record/result
+        json merged = record;
+        merged["similarity"] = similarity;
+        merged_results.push_back(merged);
     }
 
+    // Sort by similarity measure
+    std::sort(merged_results.begin(), merged_results.end(), [](const json& a, const json& b) {
+        return a["similarity"] > b["similarity"];
+    });
+
+    // Print
+    std::cout << merged_results.dump(4) << std::endl;
 
     return 0;
 }

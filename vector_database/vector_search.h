@@ -48,45 +48,50 @@ class VectorSearch {
         }
 
         void populate(const std::string& json_directory) {
-            // Loop through JSON files in directory and store all embeddings in contiguous block of memory
-            std::vector<float> all_embeddings(word_count * embedding_size);
-            int position = 0;
+            std::cout << "Populating vector search from " << json_directory << "..." << std::endl;
+
+            // Sort JSON dataset files in alphabetical order
+            std::vector<fs::path> data_files;
             for (const auto& entry : fs::directory_iterator(json_directory)) {
                 if (entry.path().extension() == ".json") {
-                    std::ifstream file(entry.path());
-                    json json_data;
-                    file >> json_data;
+                    data_files.push_back(entry.path());
+                }
+            }
+            std::sort(data_files.begin(), data_files.end());
 
-                    // Insert each embedding into the contiguous memory block
-                    for (const auto& item : json_data) {
-                        const std::vector<float> embedding = item["embedding"];
-                        std::copy(embedding.begin(), embedding.end(), all_embeddings.begin() + position * embedding_size);
+            // Loop through JSON files, extract data into memory
+            std::vector<float> all_embeddings(word_count * embedding_size);
+            int position = 0;
+            for (const auto& path : data_files) {
+                std::cout << "Extracting data from " << path << "..." << std::endl;
 
-                        position++;
+                std::ifstream file(path);
+                json json_data;
+                file >> json_data;
+                
+                // Insert each embedding into the contiguous memory block
+                for (const auto& item : json_data) {
+                    const std::vector<float> embedding = item["embedding"];
+                    std::copy(embedding.begin(), embedding.end(), all_embeddings.begin() + position * embedding_size);
 
-                        if (position % 1000 == 0 || position == word_count) {  
-                            std::cout << "Extracted " << (100.0 * position / word_count) << "% of embeddings..." << std::endl;  
-                        }
-                    }
+                    position++;
                 }
             }
 
             // Normalize the embeddings and add to index
+            std::cout << "Normalizing vector embeddings & inserting into search index..." << std::endl;
             for (int i = 0; i < word_count; i++) {
                 std::vector<float> norm_array(embedding_size);
                 normalize_vector(all_embeddings.data() + i * embedding_size, norm_array.data(), embedding_size);
                 index->addPoint(norm_array.data(), i);
-
-                if (i % 1000 == 0 || i == word_count) {  
-                    std::cout << "Added " << (100.0 * i / word_count) << "% of embeddings to index..." << std::endl;  
-                } 
             }
 
             // Serialize index
             index->saveIndex(index_name);
+            std::cout << "Index seeding complete!" << std::endl;
         }
 
-        json search(int id, float threshold, int top_n) {
+        json search(int id, int top_n) {
             // Get embedding for given id
             std::vector<float> embedding = index->getDataByLabel<float>(id);
 
@@ -101,8 +106,7 @@ class VectorSearch {
 
                 float similarity = 1.0f - distance;
 
-                // Extract and add to results
-                if (similarity >= threshold) {
+                if (neighbor_id != id) {
                     json neighbor;
                     neighbor["id"] = neighbor_id;
                     neighbor["similarity"] = similarity;
