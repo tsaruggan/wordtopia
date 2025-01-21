@@ -17,20 +17,24 @@ class VectorSearch {
         int word_count;
 
         // HNSW parameters
-        const size_t M = 16;            
-        const size_t ef_construction = 200;  
-        const size_t ef = 200;           
+        size_t M;            
+        size_t ef_construction;  
+        size_t ef;           
     public:
-        VectorSearch(const std::string& index_name, int embedding_size, int word_count) {
+        VectorSearch(const std::string& index_name, int embedding_size, int word_count, size_t M = 16, size_t ef_construction = 200, size_t ef = 256) {
             this->index_name = index_name;
             this->embedding_size = embedding_size;
             this->word_count = word_count;
+            this->M = M;            
+            this->ef_construction = ef_construction;  
+            this->ef = ef;
             space = new hnswlib::InnerProductSpace(embedding_size); 
             index = new hnswlib::HierarchicalNSW<float>(space, word_count, M, ef_construction);
+            index->setEf(ef);
         }
 
         void load() {
-            index->loadIndex(index_name, space);
+            index->loadIndex(index_name, space, word_count);
             index->setEf(ef);
         }
 
@@ -39,7 +43,6 @@ class VectorSearch {
             for (int i = 0; i < dim; i++)
                 norm += data[i] * data[i];
             norm = 1.0f / (sqrtf(norm) + 1e-30f);
-
             for (int i = 0; i < dim; i++)
                 norm_array[i] = data[i] * norm;
         }
@@ -58,7 +61,12 @@ class VectorSearch {
                     for (const auto& item : json_data) {
                         const std::vector<float> embedding = item["embedding"];
                         std::copy(embedding.begin(), embedding.end(), all_embeddings.begin() + position * embedding_size);
+
                         position++;
+
+                        if (position % 1000 == 0 || position == word_count) {  
+                            std::cout << "Extracted " << (100.0 * position / word_count) << "% of embeddings..." << std::endl;  
+                        }
                     }
                 }
             }
@@ -67,7 +75,11 @@ class VectorSearch {
             for (int i = 0; i < word_count; i++) {
                 std::vector<float> norm_array(embedding_size);
                 normalize_vector(all_embeddings.data() + i * embedding_size, norm_array.data(), embedding_size);
-                index->addPoint(norm_array.data(), i+1);
+                index->addPoint(norm_array.data(), i);
+
+                if (i % 1000 == 0 || i == word_count) {  
+                    std::cout << "Added " << (100.0 * i / word_count) << "% of embeddings to index..." << std::endl;  
+                } 
             }
 
             // Serialize index
@@ -79,7 +91,7 @@ class VectorSearch {
             std::vector<float> embedding = index->getDataByLabel<float>(id);
 
             // Search for top n similar items
-            auto nearest_neighbors = index->searchKnn(embedding.data(), top_n);
+            auto nearest_neighbors = index->searchKnn(embedding.data(), top_n + 1);
 
             // Filter similar items by cosine similarity threshold
             json result = json::array();

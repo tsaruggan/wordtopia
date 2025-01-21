@@ -2,7 +2,8 @@
 #include "vector_search.h"
 
 int main() {
-    int embedding_size = 300;
+    // int embedding_size = 300;
+    int embedding_size = 1536;
     int word_count = 28032;
     // int word_count = 28;
     std::string json_directory = "../dictionary";
@@ -11,12 +12,15 @@ int main() {
 
     // Initialize database
     Database database(database_name);
-    database.populate(json_directory);
+    // database.populate(json_directory);
 
     // Initialize vector search
-    VectorSearch vector_search(index_name, embedding_size, word_count);
-    vector_search.populate(json_directory);
-    // vector_search.load();
+    size_t M = 16;            
+    size_t ef_construction = 200;  
+    size_t ef = 10; 
+    VectorSearch vector_search(index_name, embedding_size, word_count, M, ef_construction, ef);
+    // vector_search.populate(json_directory);
+    vector_search.load();
 
     // Example word
     std::string word = "abalone";
@@ -26,8 +30,8 @@ int main() {
     std::cout << "word: '" << word << "'  -> id: " << id << std::endl;
     
     // Search for similar words
-    float threshold = 0.0;  // Adjust as needed
-    int top_n = 6;
+    float threshold = 0.0;
+    int top_n = 5;
     json similar_ids = vector_search.search(id, threshold, top_n);
 
     // Extract IDs from search results

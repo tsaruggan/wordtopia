@@ -48,13 +48,12 @@ class Database {
         }
 
         void populate(const std::string& json_directory) {
-            // Create table
-            std::string table_name = "dictionary";
-            std::string create_table_sql = "CREATE TABLE IF NOT EXISTS dictionary (id INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT, definition TEXT);";
-            // std::string create_table_sql = "CREATE TABLE IF NOT EXISTS dictionary (id INTEGER PRIMARY KEY AUTOINCREMENT, word TEXT);";
+            // Create table without AUTOINCREMENT
+            std::string create_table_sql = "CREATE TABLE IF NOT EXISTS dictionary (id INTEGER PRIMARY KEY, word TEXT, definition TEXT);";
             sqlite3_exec(db, create_table_sql.c_str(), 0, 0, 0);
 
             // Loop through JSON files in directory
+            int id = 0;
             for (const auto& entry : fs::directory_iterator(json_directory)) {
                 if (entry.path().extension() == ".json") {
                     std::ifstream file(entry.path());
@@ -65,9 +64,19 @@ class Database {
                     for (const auto& item : json_data) {
                         std::string word = item["word"];
                         std::string definition = item["definition"];
-                        std::string insert_sql = "INSERT INTO dictionary (word, definition) VALUES ('" + word + "', '" + definition + "');";
-                        // std::string insert_sql = "INSERT INTO dictionary (word) VALUES ('" + word + "');";
-                        sqlite3_exec(db, insert_sql.c_str(), 0, 0, 0);
+
+                        // Use prepared statement to prevent SQL injection
+                        std::string insert_sql = "INSERT INTO dictionary (id, word, definition) VALUES (?, ?, ?);";
+                        sqlite3_stmt* stmt;
+                        if (sqlite3_prepare_v2(db, insert_sql.c_str(), -1, &stmt, nullptr) == SQLITE_OK) {
+                            sqlite3_bind_int(stmt, 1, id);
+                            sqlite3_bind_text(stmt, 2, word.c_str(), -1, SQLITE_STATIC);
+                            sqlite3_bind_text(stmt, 3, definition.c_str(), -1, SQLITE_STATIC);
+
+                            sqlite3_step(stmt);
+                            sqlite3_finalize(stmt);
+                        }
+                        id++;  // Increment ID manually
                     }
                 }
             }
@@ -130,7 +139,6 @@ class Database {
         json get_dictionary_records(const std::vector<int>& ids) {
             // Construct batch query by directly embedding each id into the query string
             std::string query_sql = "SELECT id, word, definition FROM dictionary WHERE id IN (";
-            // std::string query_sql = "SELECT id, word FROM dictionary WHERE id IN (";
             for (size_t i = 0; i < ids.size(); ++i) {
                 query_sql += std::to_string(ids[i]);
                 if (i < ids.size() - 1) {
