@@ -1,11 +1,11 @@
 #include <iostream>
 #include <fstream>
-#include <filesystem>
+#include <experimental/filesystem>
 #include <sqlite3.h>
 #include "nlohmann/json.hpp"
 
 using json = nlohmann::json;
-namespace fs = std::filesystem;
+namespace fs = std::experimental::filesystem;
 
 // Custom exception for words that do not exist
 class WordNotFoundException : public std::exception {

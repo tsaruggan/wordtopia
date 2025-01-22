@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include <filesystem>
+#include <experimental/filesystem>
 #include "hnswlib/hnswlib.h"
 #include "nlohmann/json.hpp"
 
-namespace fs = std::filesystem;
+namespace fs = std::experimental::filesystem;
 using json = nlohmann::json;
 
 class VectorSearch {
@@ -101,7 +101,9 @@ class VectorSearch {
             // Filter similar items by cosine similarity threshold
             json result = json::array();
             while (!nearest_neighbors.empty()) {
-                auto [distance, neighbor_id] = nearest_neighbors.top();
+                auto top_element = nearest_neighbors.top();
+                float distance = top_element.first;
+                int neighbor_id = top_element.second;
                 nearest_neighbors.pop();
 
                 float similarity = 1.0f - distance;

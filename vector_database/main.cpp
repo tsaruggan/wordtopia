@@ -1,10 +1,10 @@
-#include <grpcpp/grpcpp.h>
+#include <grpc++/grpc++.h>
 #include "service.grpc.pb.h"
 #include "service_impl.h"
 
 int main() {
     // Initialize gRPC service implementation
-    std::string json_directory = "../dictionary";
+    std::string json_directory = "./dataset";
     std::string database_name = "dictionary.db";
     std::string index_name = "index.bin";
     int embedding_size = 1536;
@@ -24,5 +24,3 @@ int main() {
 
     return 0;
 }
-
-// g++ -o main main.cpp -I./hnswlib -lsqlite3 -std=c++17

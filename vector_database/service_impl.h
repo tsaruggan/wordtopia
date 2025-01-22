@@ -1,8 +1,10 @@
-#include <grpcpp/grpcpp.h>
+#include <grpc++/grpc++.h>
 #include "service.grpc.pb.h"
 #include "database.h"
 #include "vector_search.h"
-#include <filesystem>
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
 
 class VectorDatabaseServiceImpl final : public search::VectorDatabaseService::Service {
     private:
@@ -14,16 +16,10 @@ class VectorDatabaseServiceImpl final : public search::VectorDatabaseService::Se
             : database(database_name), vector_search(index_name, embedding_size, word_count, 16, 200, 10) {
 
             // Initialize database
-            if (!std::filesystem::exists(database_name)) {
-                database.populate(json_directory);
-            }
-            
+            database.populate(json_directory);
+
             // Initialize vector search
-            if (!std::filesystem::exists(index_name)) {
-                vector_search.populate("../dictionary");
-            } else {
-                vector_search.load();
-            }
+            vector_search.populate(json_directory);
         }
 
         grpc::Status SearchSimilarWords(grpc::ServerContext* context, const search::SearchRequest* request, search::SearchResponse* response) override {
