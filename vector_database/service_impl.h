@@ -12,14 +12,9 @@ class VectorDatabaseServiceImpl final : public search::VectorDatabaseService::Se
         VectorSearch vector_search;
 
     public:
-        VectorDatabaseServiceImpl(const std::string& json_directory, const std::string& database_name, const std::string& index_name, int embedding_size, int word_count)
+        VectorDatabaseServiceImpl(const std::string& database_name, const std::string& index_name, int embedding_size, int word_count)
             : database(database_name), vector_search(index_name, embedding_size, word_count, 16, 200, 10) {
-
-            // Initialize database
-            database.populate(json_directory);
-
-            // Initialize vector search
-            vector_search.populate(json_directory);
+            vector_search.load();
         }
 
         grpc::Status SearchSimilarWords(grpc::ServerContext* context, const search::SearchRequest* request, search::SearchResponse* response) override {

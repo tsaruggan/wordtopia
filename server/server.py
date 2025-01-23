@@ -6,7 +6,7 @@ import service_pb2_grpc
 app = Flask(__name__)
 
 def vector_database_request(word, top_n):
-    channel = grpc.insecure_channel("localhost:50051")
+    channel = grpc.insecure_channel("vector_database:50051")
     stub = service_pb2_grpc.VectorDatabaseServiceStub(channel)
     grpc_request = service_pb2.SearchRequest(word=word, top_n=top_n)
     response = stub.SearchSimilarWords(grpc_request)
@@ -20,4 +20,4 @@ def search():
     return jsonify(results)
 
 if __name__ == "__main__":
-    app.run(port=8080)
+    app.run(host="0.0.0.0", port=8080)

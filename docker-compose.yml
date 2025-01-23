@@ -1,0 +1,22 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - vector_database
+
+  vector_database:
+    build:
+      context: .
+      dockerfile: vector_database/Dockerfile
+    ports:
+      - "50051:50051"
+    volumes:
+      - vector_database_data:/vector_database
+
+volumes:
+  vector_database_data:
+    driver: local
