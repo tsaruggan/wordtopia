@@ -1,5 +1,5 @@
 :root {
-  font-family: "Rubik", Inter, system-ui, Helvetica, Arial, sans-serif;
+  font-family: "Geist", Inter, system-ui, Helvetica, Arial, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -50,13 +50,17 @@ body {
   width: 100%;
   box-sizing: border-box;
   padding: 12px;
-  border-radius: 16px;
   border: 1px solid black;
   padding-left: 24px;
   padding-right: 24px;
   font-size: 18px;
   text-align: center;
   transition: outline 0.1s ease-in;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  transition: border-radius 0.2s;
 }
 
 .searchInput:focus {
@@ -70,4 +74,51 @@ body {
 .searchInput::selection {
   background-color: #6B7FD7; 
   color: white;
+}
+
+.searchContainer:has(.suggestionsContainer) .searchInput {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.suggestionsContainer {
+  border: solid 1px black;
+  border-top: 0px;
+  animation: blurIn 0.2s ease-out;
+}
+
+@keyframes blurIn {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.suggestionItem {
+  border-top: solid 1px black;
+  padding: 12px;
+}
+
+.suggestionItem:first-child {
+  border-top: none;
+}
+
+.suggestionItem:hover {
+  cursor: pointer;
+  background-color: lightblue;
+}
+
+
+#suggestionTitle {
+  display: block;
+  font-weight: bold;
+  font-family: "Geist Mono";
+}
+
+#suggestionDefinition {
+  display: block;
 }

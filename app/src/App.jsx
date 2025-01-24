@@ -1,15 +1,22 @@
 import { useState } from 'react';
-import SearchInput from './SearchInput';
+import Search from './Search';
 
 function App() {
+
+  const getSuggestions = async (prefix) => {
+    const response = await fetch(`/suggest?prefix=${prefix}`);
+    const data = await response.json();
+    return data;
+  }
+
   return (
     <>
       <div className='page'>
         <div className='main'>
           <div className='header'>
-            <h1>Wordology</h1>
+            <h1>Metaphoria</h1>
           </div>
-          <SearchInput />
+          <Search getSuggestions={getSuggestions} />
           
         </div>
       </div>
