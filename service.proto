@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package service;
+
+service VectorDatabaseService {
+    rpc SearchSimilarWords (SearchRequest) returns (SearchResponse);
+    rpc SuggestWords (SuggestionRequest) returns (SuggestionResponse);
+}
+
+message SearchRequest {
+    string word = 1;
+    int32 n = 2;
+}
+
+message SearchResponse {
+    repeated SearchResult results = 1;
+}
+
+message SearchResult {
+    string word = 1;
+    string definition = 2;
+    float similarity = 3;
+}
+
+message SuggestionRequest {
+    string prefix = 1;
+    int32 n = 2;
+}
+
+message SuggestionResponse {
+    repeated SuggestionResult suggestions = 1;
+}
+
+message SuggestionResult {
+    string word = 1;
+    string definition = 2;
+}

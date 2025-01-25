@@ -50,9 +50,13 @@ class Database {
         void populate(const std::string& json_directory) {
             std::cout << "Populating database from " << json_directory << "..." << std::endl;
 
-            // Create table without id (starting from 0), word, and definition
+            // Create table with id (starting from 0), word, and definition
             std::string create_table_sql = "CREATE TABLE IF NOT EXISTS dictionary (id INTEGER PRIMARY KEY, word TEXT, definition TEXT);";
             sqlite3_exec(db, create_table_sql.c_str(), 0, 0, 0);
+
+            // Create index to support prefix suggestion search on words
+            std::string create_index_sql = "CREATE INDEX IF NOT EXISTS suggest ON dictionary(word);";
+            sqlite3_exec(db, create_index_sql.c_str(), 0, 0, 0);
 
             // Sort JSON dataset files in alphabetical order
             std::vector<fs::path> data_files;
@@ -176,6 +180,35 @@ class Database {
                 results.push_back(record);
             }
             
+            // Clean up resources & return
+            sqlite3_finalize(stmt);
+            return results;
+        }
+
+        // Fetch the word & defintions of suggested words for a given prefix
+        json suggest(const std::string& prefix, int n) {
+            // If query preparation fails, throw an exception
+            std::string query_sql = "SELECT word, definition FROM dictionary WHERE word LIKE ? LIMIT ?;";
+            sqlite3_stmt *stmt;
+            if (sqlite3_prepare_v2(db, query_sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+                std::string error = sqlite3_errmsg(db);
+                throw DatabaseFailureException(error);
+            }
+
+            // Bind prefix to query to prevent injection attack
+            std::string prefix_pattern = prefix + "%";
+            sqlite3_bind_text(stmt, 1, prefix_pattern.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, 2, n);
+
+            // Execute statement and extract columns to JSON
+            json results = json::array();
+            while (sqlite3_step(stmt) == SQLITE_ROW) {
+                json record;
+                record["word"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+                record["definition"] = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+                results.push_back(record);
+            }
+
             // Clean up resources & return
             sqlite3_finalize(stmt);
             return results;

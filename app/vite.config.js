@@ -8,6 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/suggest': 'http://localhost:8080', // Proxy requests to your backend
+      '/search': 'http://localhost:8080',
     },
   },
 })

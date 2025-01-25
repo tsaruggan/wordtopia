@@ -3,12 +3,6 @@
 #include "service_impl.h"
 
 int main(int argc, char** argv) {
-    // Initialize gRPC service implementation
-    // std::string json_directory = "./dataset";
-    // std::string database_name = "dictionary.db";
-    // std::string index_name = "index.bin";
-    // int embedding_size = 1536;
-    // int word_count = 28032;
     std::string database_name = argv[1];
     std::string index_name = argv[2];
     int embedding_size = std::stoi(argv[3]);

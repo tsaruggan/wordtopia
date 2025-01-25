@@ -11,7 +11,7 @@ COPY server /server
 RUN pip install --no-cache-dir flask grpcio grpcio-tools
 
 # Generate gRPC code
-COPY protobuf/service.proto /server
+COPY service.proto /server
 RUN python3 -m grpc_tools.protoc -I=. --python_out=. --grpc_python_out=. service.proto
 
 # Expose the port your Flask app runs on

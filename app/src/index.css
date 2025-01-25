@@ -15,7 +15,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-items: center;
-  max-width: 800px;
+  max-width: 400px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -121,4 +121,27 @@ body {
 
 #suggestionDefinition {
   display: block;
+}
+
+.mainWordContainer {
+  border: solid 1px black;
+  padding: 12px;
+  animation: blurIn 0.2s ease-out;
+  width: 100%;
+}
+
+#mainWordTitle {
+  display: block;
+  font-weight: bold;
+  font-family: "Geist Mono";
+}
+
+#mainWordDefinition {
+  display: block;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

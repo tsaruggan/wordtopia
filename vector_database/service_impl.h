@@ -6,7 +6,7 @@
 
 namespace fs = std::experimental::filesystem;
 
-class VectorDatabaseServiceImpl final : public search::VectorDatabaseService::Service {
+class VectorDatabaseServiceImpl final : public service::VectorDatabaseService::Service {
     private:
         Database database;
         VectorSearch vector_search;
@@ -17,15 +17,15 @@ class VectorDatabaseServiceImpl final : public search::VectorDatabaseService::Se
             vector_search.load();
         }
 
-        grpc::Status SearchSimilarWords(grpc::ServerContext* context, const search::SearchRequest* request, search::SearchResponse* response) override {
+        grpc::Status SearchSimilarWords(grpc::ServerContext* context, const service::SearchRequest* request, service::SearchResponse* response) override {
             std::string word = request->word();
-            int top_n = request->top_n();
+            int n = request->n();
             
             // Get the id for the word
             int id = database.get_id(word);
             
             // Search for similar words using id
-            json search_results = vector_search.search(id, top_n);
+            json search_results = vector_search.search(id, n);
 
             // Extract IDs from search results
             std::vector<int> ids = { id };
@@ -38,7 +38,7 @@ class VectorDatabaseServiceImpl final : public search::VectorDatabaseService::Se
             
             // Merge dictionary records with similarity scores
             for (const auto& record : dictionary_records) {
-                search::SearchResult* result = response->add_results();
+                service::SearchResult* result = response->add_results();
                 int id = record["id"];
                 
                 // Find corresponding similarity score
@@ -58,4 +58,24 @@ class VectorDatabaseServiceImpl final : public search::VectorDatabaseService::Se
             
             return grpc::Status::OK;
         }
+
+        grpc::Status SuggestWords(grpc::ServerContext* context, const service::SuggestionRequest* request, service::SuggestionResponse* response) override {
+            std::cout << "SuggestWords method called!" << std::endl;
+            
+            std::string prefix = request->prefix();
+            int n = request->n();
+
+            // Query database for word suggestions
+            json suggestions = database.suggest(prefix, n);
+
+            // Populate gRPC response
+            for (const auto& suggestion : suggestions) {
+                service::SuggestionResult* result = response->add_suggestions();
+                result->set_word(suggestion["word"]);
+                result->set_definition(suggestion["definition"]);
+            }
+
+            return grpc::Status::OK;
+        }
+
 };

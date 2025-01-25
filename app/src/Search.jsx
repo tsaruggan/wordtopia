@@ -12,7 +12,11 @@ export default function Search({ getSuggestions, submitSearch }) {
   const fetchSuggestions = async (prefix) => {
     const newSuggestions = await getSuggestions(prefix);
     setSuggestions(newSuggestions);
-    console.log(newSuggestions);
+  }
+
+  const handleSubmit = (suggestion) => {
+    setQuery("");
+    submitSearch(suggestion);
   }
 
   useEffect(() => {
@@ -45,7 +49,11 @@ export default function Search({ getSuggestions, submitSearch }) {
       {suggestions.length > 0 && (
         <div className="suggestionsContainer">
           {suggestions.map((suggestion, index) => (
-            <div key={suggestion.word} className="suggestionItem">
+            <div 
+              key={suggestion.word} 
+              className="suggestionItem"
+              onClick={() => handleSubmit(suggestion)}
+            >
               <span id="suggestionTitle">{suggestion.word}</span>
               <span id="suggestionDefinition">{suggestion.definition}</span>
             </div>

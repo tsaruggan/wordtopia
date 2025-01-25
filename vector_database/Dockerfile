@@ -27,7 +27,7 @@ COPY dataset /vector_database/dataset
 COPY vector_database /vector_database
 
 # Generate Protobuf and gRPC files
-COPY protobuf/service.proto /vector_database
+COPY service.proto /vector_database
 RUN protoc --proto_path=. --cpp_out=. --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` service.proto
 
 # Compile the main C++ application
