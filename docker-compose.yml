@@ -4,7 +4,9 @@ services:
       context: .
       dockerfile: server/Dockerfile
     ports:
-      - "8080:8080"
+      - "8080:8080"  # Update the left side of this to change the host port
+    environment:
+      - PORT=8080  # Set the port for Flask server here
     depends_on:
       - vector_database
 
