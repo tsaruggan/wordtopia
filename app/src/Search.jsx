@@ -49,8 +49,8 @@ export default function Search({ getSuggestions, submitSearch }) {
       {suggestions.length > 0 && (
         <div className="suggestionsContainer">
           {suggestions.map((suggestion, index) => (
-            <div 
-              key={suggestion.word} 
+            <div
+              key={suggestion.word}
               className="suggestionItem"
               onClick={() => handleSubmit(suggestion)}
             >
@@ -60,6 +60,15 @@ export default function Search({ getSuggestions, submitSearch }) {
           ))}
         </div>
       )}
+
+      {(suggestions.length == 0 && query.length > 1) && (
+        <div className="suggestionsContainer">
+          <div className="suggestionItem" style={{ pointerEvents: 'none' }}>
+            <span id="suggestionDefinition">No results found.</span>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );

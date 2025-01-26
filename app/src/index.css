@@ -15,38 +15,45 @@ body {
   flex-direction: column;
   align-items: center;
   justify-items: center;
-  max-width: 400px;
+  max-width: 448px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 12px;
 }
 
 .main {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-top: 56px;
+  padding-top: 48px;
   align-items: center;
 }
 
 .header {
   width: 100%;
   text-align: center;
+  /* margin-top: 24px; */
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .header h1 {
   font-size: 40px;
+  margin: 0;
+  /* margin-bottom: 12px; */
 }
 
 .searchContainer {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 400px;
-  align-items: center;
+  align-content: center;
 }
 
 .searchInput {
   all: unset;
-  display: block;
-  margin : 0 auto;
+  margin : 0;
   width: 100%;
   box-sizing: border-box;
   padding: 12px;
@@ -71,7 +78,7 @@ body {
   visibility: hidden;
 }
 
-.searchInput::selection {
+::selection {
   background-color: #6B7FD7; 
   color: white;
 }
@@ -101,6 +108,9 @@ body {
 .suggestionItem {
   border-top: solid 1px black;
   padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .suggestionItem:first-child {
@@ -109,39 +119,101 @@ body {
 
 .suggestionItem:hover {
   cursor: pointer;
-  background-color: lightblue;
+  background-color: #e9e9e9;
 }
 
-
 #suggestionTitle {
-  display: block;
+  /* display: block; */
   font-weight: bold;
   font-family: "Geist Mono";
 }
 
 #suggestionDefinition {
-  display: block;
+  /* display: block; */
 }
 
-.mainWordContainer {
-  border: solid 1px black;
+.resultsContainer {
+  /* width: 100%; */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.queryResultContainer, .searchResultContainer {
   padding: 12px;
-  animation: blurIn 0.2s ease-out;
-  width: 100%;
+  border: solid 1px black;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-#mainWordTitle {
+#queryResultTitle, #searchResultTitle {
   display: block;
   font-weight: bold;
   font-family: "Geist Mono";
 }
 
-#mainWordDefinition {
+#queryResultDefinition, #searchResultDefinition {
   display: block;
 }
 
-@keyframes gradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.searchResultsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.searchResultsContainer h3 {
+  margin: 0;
+}
+
+.exitButtonContainer {
+  display: flex;
+  justify-content: end;
+}
+
+.exitButtonContainer button {
+  all: unset;
+  font-size: 12px;
+  border: solid 1px black;
+  border-top: 0;
+  cursor: pointer;
+  padding: 4px;
+  width: 140px;
+  text-align: justify;
+}
+
+.exitButtonContainer button:hover {
+  background-color: #e9e9e9;
+}
+
+@keyframes arrowMove {
+  0% { margin-left: 8px; }
+  50% { margin-left: 12px; }
+  100% { margin-left: 8px; }
+}
+
+.exitButtonContainer button::after {
+  content: "→";
+  margin-left: 8px;
+  animation: arrowMove 0.8s infinite ease-in-out;
+}
+
+.githubButton {
+  all: unset;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 5px 8px;
+  text-decoration: none;
+  background-color: #1e1e1e11;
+  font-family: "Geist Mono";
+  border-radius: 2px;
+  letter-spacing: -.3px;
+}
+
+.githubButton:hover {
+  background-color: #e9e9e9;
 }
