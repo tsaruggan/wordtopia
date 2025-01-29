@@ -398,3 +398,6 @@ dist
 
 # Ignore all .bin files at any level
 **/*.bin
+
+# AWS key thingy
+wordtopia.pem

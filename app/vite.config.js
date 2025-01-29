@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    proxy: {
-      '/suggest': 'http://localhost:8080', // Proxy requests to your backend
-      '/search': 'http://localhost:8080',
-    },
+    // proxy: { // Proxy requests to local server
+    //   '/suggest': 'http://localhost:8080', 
+    //   '/search': 'http://localhost:8080',
+    // },
   },
 })
