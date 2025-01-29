@@ -17,8 +17,8 @@ services:
     ports:
       - "50051:50051"
     volumes:
-      - vector_database_data:/vector_database
+      - wordtopia_data:/vector_database/data
 
 volumes:
-  vector_database_data:
+  wordtopia_data:
     driver: local

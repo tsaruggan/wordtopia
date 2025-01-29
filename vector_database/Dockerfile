@@ -36,10 +36,13 @@ RUN g++ -o main main.cpp service.pb.cc service.grpc.pb.cc \
     -L/usr/local/lib -L/usr/lib \
     -lprotobuf -lgrpc++ -lsqlite3 -lstdc++fs -std=c++17
 
+# Make directory for persistent storage
+RUN mkdir /vector_database/data
+
 # Set the parameter values
 ENV JSON_DIRECTORY=./dataset
-ENV DATABASE_NAME=dictionary.db
-ENV INDEX_NAME=index.bin
+ENV DATABASE_NAME=./data/dictionary.db
+ENV INDEX_NAME=./data/index.bin
 ENV EMBEDDING_SIZE=1536
 # ENV WORD_COUNT=28032
 ENV WORD_COUNT=28
@@ -55,7 +58,7 @@ RUN ./init $JSON_DIRECTORY $DATABASE_NAME $INDEX_NAME $EMBEDDING_SIZE $WORD_COUN
 RUN rm -rf /vector_database/dataset
 
 # Persistence
-VOLUME ["/vector_database"]
+VOLUME ["/vector_database/data"]
 
 # Expose the necessary port
 EXPOSE 50051
