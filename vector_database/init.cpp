@@ -8,17 +8,17 @@ int main(int argc, char** argv) {
     // int embedding_size = 1536;
     // int word_count = 28032;
 
-    std::string json_directory = argv[1];
+    std::string dataset_name = argv[1];
     std::string database_name = argv[2];
     std::string index_name = argv[3];
     int embedding_size = std::stoi(argv[4]);
     int word_count = std::stoi(argv[5]);
 
     Database database(database_name);
-    database.populate(json_directory);
+    database.populate(dataset_name);
 
     VectorSearch vector_search(index_name, embedding_size, word_count, 16, 200, 10);
-    vector_search.populate(json_directory);
+    vector_search.populate(dataset_name);
 
     return 0;
 }

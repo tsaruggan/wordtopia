@@ -47,35 +47,21 @@ class VectorSearch {
                 norm_array[i] = data[i] * norm;
         }
 
-        void populate(const std::string& json_directory) {
-            std::cout << "Populating vector search from " << json_directory << "..." << std::endl;
+        void populate(const std::string& dataset_name) {
+            std::cout << "Populating vector search from " << dataset_name << "..." << std::endl;
 
-            // Sort JSON dataset files in alphabetical order
-            std::vector<fs::path> data_files;
-            for (const auto& entry : fs::directory_iterator(json_directory)) {
-                if (entry.path().extension() == ".json") {
-                    data_files.push_back(entry.path());
-                }
-            }
-            std::sort(data_files.begin(), data_files.end());
+            // Extract JSON data then populate index
+            std::ifstream dataset_file(dataset_name);
+            json json_data;
+            dataset_file >> json_data;
 
-            // Loop through JSON files, extract data into memory
+            // Extract each embedding into the contiguous memory block
             std::vector<float> all_embeddings(word_count * embedding_size);
             int position = 0;
-            for (const auto& path : data_files) {
-                std::cout << "Extracting data from " << path << "..." << std::endl;
-
-                std::ifstream file(path);
-                json json_data;
-                file >> json_data;
-                
-                // Insert each embedding into the contiguous memory block
-                for (const auto& item : json_data) {
-                    const std::vector<float> embedding = item["embedding"];
-                    std::copy(embedding.begin(), embedding.end(), all_embeddings.begin() + position * embedding_size);
-
-                    position++;
-                }
+            for (const auto& item : json_data) {
+                const std::vector<float> embedding = item["embedding"];
+                std::copy(embedding.begin(), embedding.end(), all_embeddings.begin() + position * embedding_size);
+                position++;
             }
 
             // Normalize the embeddings and add to index

@@ -21,7 +21,7 @@ RUN mkdir -p /usr/local/include/nlohmann && \
     curl -L https://github.com/nlohmann/json/releases/download/v3.7.3/json.hpp -o /usr/local/include/nlohmann/json.hpp
 
 # Copy the dataset
-COPY dataset /vector_database/dataset
+COPY dictionary.json /vector_database
 
 # Copy source code
 COPY vector_database /vector_database
@@ -40,7 +40,7 @@ RUN g++ -o main main.cpp service.pb.cc service.grpc.pb.cc \
 RUN mkdir /vector_database/data
 
 # Set the parameter values
-ENV JSON_DIRECTORY=./dataset
+ENV DATASET_NAME=./dictionary.json
 ENV DATABASE_NAME=./data/dictionary.db
 ENV INDEX_NAME=./data/index.bin
 ENV EMBEDDING_SIZE=1536
@@ -52,10 +52,10 @@ RUN g++ -o init init.cpp \
     -I/usr/local/include -I/usr/include -I/hnswlib \
     -L/usr/local/lib -L/usr/lib \
     -lsqlite3 -lstdc++fs -std=c++17
-RUN ./init $JSON_DIRECTORY $DATABASE_NAME $INDEX_NAME $EMBEDDING_SIZE $WORD_COUNT
+RUN ./init $DATASET_NAME $DATABASE_NAME $INDEX_NAME $EMBEDDING_SIZE $WORD_COUNT
 
-# Delete the dataset folder as it's no longer needed
-RUN rm -rf /vector_database/dataset
+# Delete the dataset as it's no longer needed
+RUN rm -rf /vector_database/dictionary.json
 
 # Persistence
 VOLUME ["/vector_database/data"]
