@@ -50,7 +50,7 @@ function App() {
     return (
       <div className='header'>
         <h1>Wordtopia</h1>
-        <div className='siteDescription'>Wordtopia is an AI dictionary + thesaurus powered by OpenAI language models. We generated definitions and encoded vector representations for over 475K words to study the AI's internal understanding of words in their semantic contexts. Use our custom vector database to find words with similar embeddings (vibes).</div>
+        <div className='siteDescription'>Wordtopia is an AI dictionary + thesaurus powered by OpenAI language models. We generated definitions and encoded vector representations for over 300K words to study the AI's internal understanding of words in their semantic contexts. Use our custom vector database to find words with similar embeddings (vibes).</div>
       </div>
     );
   }
