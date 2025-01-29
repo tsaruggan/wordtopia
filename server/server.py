@@ -7,14 +7,16 @@ import service_pb2_grpc
 app = Flask(__name__, static_folder='dist')
 
 def vector_database_search(word, n):
-    channel = grpc.insecure_channel("vector_database:50051")
+    grpc_port = int(os.environ.get("GRPC_PORT", 50051))
+    channel = grpc.insecure_channel("vector_database:"+ str(grpc_port))
     stub = service_pb2_grpc.VectorDatabaseServiceStub(channel)
     grpc_request = service_pb2.SearchRequest(word=word, n=n)
     response = stub.SearchSimilarWords(grpc_request)
     return [{"word": r.word, "definition": r.definition, "similarity": r.similarity} for r in response.results]
 
 def vector_database_suggest(prefix, n):
-    channel = grpc.insecure_channel("vector_database:50051")
+    grpc_port = int(os.environ.get("GRPC_PORT", 50051))
+    channel = grpc.insecure_channel("vector_database:"+ str(grpc_port))
     stub = service_pb2_grpc.VectorDatabaseServiceStub(channel)
     grpc_request = service_pb2.SuggestionRequest(prefix=prefix, n=n)
     response = stub.SuggestWords(grpc_request)

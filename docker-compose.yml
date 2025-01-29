@@ -7,6 +7,7 @@ services:
       - "8080:8080"  # Update the left side of this to change the host port
     environment:
       - PORT=8080  # Set the port for Flask server here
+      - GRPC_PORT=50051  # Set the port for Flask server here
     depends_on:
       - vector_database
 
@@ -14,8 +15,8 @@ services:
     build:
       context: .
       dockerfile: vector_database/Dockerfile
-    ports:
-      - "50051:50051"
+    environment:
+      - GRPC_PORT=50051  # Set the port for grPC server here
     volumes:
       - wordtopia_data:/vector_database/data
 

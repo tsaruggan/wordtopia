@@ -10,7 +10,8 @@ int main(int argc, char** argv) {
     VectorDatabaseServiceImpl service(database_name, index_name, embedding_size, word_count);
 
     // Set up the gRPC server builder
-    std::string server_address = "0.0.0.0:50051";
+    std::string port = std::getenv("GRPC_PORT") ? std::getenv("GRPC_PORT") : "50051";
+    std::string server_address = "0.0.0.0:" + port;
     grpc::ServerBuilder builder;
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);

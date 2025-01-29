@@ -61,7 +61,7 @@ RUN rm -rf /vector_database/dataset
 VOLUME ["/vector_database/data"]
 
 # Expose the necessary port
-EXPOSE 50051
+# EXPOSE 50051
 
 # Run the compiled binary
 CMD ./main $DATABASE_NAME $INDEX_NAME $EMBEDDING_SIZE $WORD_COUNT
