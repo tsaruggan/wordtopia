@@ -41,7 +41,8 @@ ENV JSON_DIRECTORY=./dataset
 ENV DATABASE_NAME=dictionary.db
 ENV INDEX_NAME=index.bin
 ENV EMBEDDING_SIZE=1536
-ENV WORD_COUNT=28032
+# ENV WORD_COUNT=28032
+ENV WORD_COUNT=28
 
 # Compile and run the db/index initialization script
 RUN g++ -o init init.cpp \
