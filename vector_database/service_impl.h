@@ -60,8 +60,6 @@ class VectorDatabaseServiceImpl final : public service::VectorDatabaseService::S
         }
 
         grpc::Status SuggestWords(grpc::ServerContext* context, const service::SuggestionRequest* request, service::SuggestionResponse* response) override {
-            std::cout << "SuggestWords method called!" << std::endl;
-            
             std::string prefix = request->prefix();
             int n = request->n();
 
