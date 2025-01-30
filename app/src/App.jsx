@@ -3,7 +3,6 @@ import Search from './Search';
 import Colour, * as matisse from "matisse";
 import SearchResults from './SearchResults';
 import Globe from './Globe';
-const apiUrl = import.meta.env.VITE_API_URL;
 
 function App() {
   const [queryResult, setQueryResult] = useState(null);
@@ -13,13 +12,13 @@ function App() {
   const [displayColour2, setDisplayColour2] = useState(null);
 
   const getSuggestions = async (prefix) => {
-    const response = await fetch(`${apiUrl}/suggest?prefix=${prefix}&n=8`);
+    const response = await fetch(`/api/suggest?prefix=${prefix}&n=8`);
     const data = await response.json();
     return data;
   }
 
   const getSearchResults = async (word) => {
-    const response = await fetch(`${apiUrl}/search?word=${word}&n=10`);
+    const response = await fetch(`/api/search?word=${word}&n=10`);
     const data = await response.json();
     const filteredData = data
       .filter(result => result.word !== word)
