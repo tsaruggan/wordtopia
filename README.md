@@ -1,4 +1,4 @@
-# Wordtopia
+# Wordtopia 🌐
 
 **[Wordtopia](https://wordtopia.vercel.app)** is an AI dictionary + thesaurus powered by OpenAI language models. Use our custom vector search engine to find similar words.
 
