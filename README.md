@@ -9,7 +9,7 @@ Language is always evolving, with words changing in meaning over time due to our
 
 By leveraging prompt engineering techniques and OpenAI's Batch API, we generated definitions and embeddings for over 300K words. Next, we use this giant pre-generated dataset to seed our database & search index and integrate it all together into a full-stack web app.
 
-We developed a custom vector database using C++ for fast indexing and cosine-similarity search. This solution encapsulates a SQLite database and [HNSWLib](https://github.com/nmslib/hnswlib) search index. A Flask server exposes a REST API to interface with the database by forwarding autocomplete and search requests via gRPC and Protocol Buffers. This microservice architecture is deployed on AWS EC2 using Docker Compose for container orchestration. Lastly, an interactive React frontend app hosted on Vercel brings the whole project to life. 
+We developed a custom vector database using C++ for fast indexing and cosine-similarity search. This solution encapsulates a SQLite database and [HNSWLib](https://github.com/nmslib/hnswlib) search index. A Flask server exposes a REST API to interface with the database by forwarding autocomplete and search requests via gRPC and Protocol Buffers. This microservice architecture is deployed onto an AWS EC2 instance using Docker Compose for container orchestration. Lastly, an interactive React frontend app hosted on Vercel brings the whole project to life. 
 
 
 ![wordtopia-arch](https://github.com/user-attachments/assets/3e3a03dc-3b07-4ca2-bd35-479be0e38cf5)
