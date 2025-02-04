@@ -11,5 +11,8 @@ By leveraging prompt engineering techniques and OpenAI's Batch API, we generated
 
 We developed a custom vector database using C++ for fast indexing and cosine-similarity search. This solution encapsulates a SQLite database and [HNSWLib](https://github.com/nmslib/hnswlib) search index. A Flask server exposes a REST API to interface with the database by forwarding autocomplete and search requests via gRPC and Protocol Buffers. This microservice architecture is deployed onto an AWS EC2 instance using Docker Compose for container orchestration. Lastly, an interactive React frontend app hosted on Vercel brings the whole project to life. 
 
-
 ![wordtopia-arch](https://github.com/user-attachments/assets/3e3a03dc-3b07-4ca2-bd35-479be0e38cf5)
+
+## Data
+> [!IMPORTANT]  
+> We are currently working on exporting the full dataset as well as making the prompts + data generation scripts publicly accessible.
