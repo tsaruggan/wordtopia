@@ -2,6 +2,8 @@
 
 **[Wordtopia](https://wordtopia.vercel.app)** is an AI dictionary + thesaurus powered by OpenAI language models. Use our custom vector search engine to find similar words.
 
+**The demo above is deprecated since I ran out of AWS credits**
+
 ## About
 Language is always evolving, with words changing in meaning over time due to our collective memory, semantic context, and daily use. This fun LLM experiment lets us to study the what AI may internally deduce words to mean, especially in relation to other words in its training corpus. Rather than looking up a hardcoded thesaurus, Wordtopia uses vector search to find words with cosine-similar embeddings (not necessarily synoynms or antoynms). [Word embeddings](https://platform.openai.com/docs/guides/embeddings?lang=python) are vector representations of words where the distance between two vectors measures their relatedness. 
 
